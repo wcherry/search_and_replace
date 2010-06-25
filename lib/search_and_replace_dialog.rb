@@ -11,8 +11,18 @@ module Redcar
    import org.eclipse.swt.graphics.GC
 
   
- class SearchAndReplaceDialog < JFace::Dialogs::Dialog
+  class SearchAndReplaceDialog < JFace::Dialogs::Dialog
+    CANCEL = -1
+    REPLACE_SINGLE = 0
+    REPLACE_ALL = 1
+    SEARCH_REGEX = 0
+    SEARCH_GLOB = 1
+    SEARCH_NONE = 2
+  
+  
     attr_accessor :searchTerms, :replaceTerms
+    attr_reader :search, :replace, :search_type, :replace_type
+    
     
     def initialize(parentShell, searchValue = "", initialDirectory = ".")
       super(parentShell)
@@ -22,6 +32,7 @@ module Redcar
         
     protected
 
+    # Call back method, used to setup the dialog shell
     def configureShell(shell) 
        super
        shell.setText("Search and Replace")
@@ -38,12 +49,18 @@ module Redcar
        @searchText = create_text_field_with_label(composite, "Search Term:", searchValue, @searchTerms, 40)
        create_button(composite, "Replace All", 1000, true) do |id|
          puts "Replace All: #{@searchText.getText} with #{@replaceText.getText}"
+        @search = @searchText.getText
+        @replace = @replaceText.getText
+        @replace_type = REPLACE_ALL
        end
 
       
        @replaceText = create_text_field_with_label(composite, "Replace:", "[Replacement Text]", @replaceTerms, 40)
        create_button(composite, "Replace", 1001, false) do |id| 
       	 puts "Replace: #{@searchText.getText} with #{@replaceText.getText}"
+        @search = @searchText.getText
+        @replace = @replaceText.getText
+        @replace_type = REPLACE_SINGLE
        end
      end
     
@@ -79,7 +96,7 @@ module Redcar
           puts err   #TODO: Better error handling
         end
      if(defaultButton)
-       Shell shell = parent.getShell()
+       shell = parent.getShell()
        if(shell)	then shell.setDefaultButton(button) end
      end
      setButtonLayoutData(button)

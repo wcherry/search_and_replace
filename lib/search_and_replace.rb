@@ -32,13 +32,11 @@ module Redcar
         @@dialog ||= @@dialog = SearchAndReplaceDialog.new(SearchAndReplace::parent_shell, "test")
         @@dialog.searchTerms = ["foo", "bar", "alpha", "gama"]
         @@dialog.replaceTerms = ["A", "B", "C", "D"]
-        code = @@dialog.open()
-        button = (code == 0 ? :ok : :cancel)
-        if(code == 0) 
-        	value = dialog.getValue
-          puts("Dialog returned #{value}")
+        @@dialog.open()
+        if(@@dialog.replace_type != SearchAndReplaceDialog::CANCEL) 
+          puts("Replacing #{@@dialog.replace_type == SearchAndReplaceDialog::REPLACE_ALL ? 'all ':''} #{@@dialog.search} with #{@@dialog.replace}")
         end
-        # {:button => button, :value => dialog.getValue}
+        
       end
     end
   end
